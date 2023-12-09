@@ -120,4 +120,19 @@ void	ClonaPalabras(
 		int		iPeso[],							//Peso de las palabras en la lista final
 		int& iNumLista)							//Numero de elementos en la szListaFinal
 	{
+		setAscii();
+		iNumLista = 0;
+		for (int i = 0; i < iNumSugeridas; i++) {
+			for (int j = 0; j < iNumElementos; j++) {
+				if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
+					bool flag = false;
+					for (int k = 0; k < iNumLista && !flag; k++)
+						if (strcmp(szListaFinal[k], szPalabras[j]) == 0)
+							flag = true;
+					if (flag) continue;
+					strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
+					iPeso[iNumLista++] = iEstadisticas[j];
+				}
+			}
+		}
 

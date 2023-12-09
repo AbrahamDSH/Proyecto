@@ -159,3 +159,29 @@ void	ClonaPalabras(
 		}
 	}
 
+
+	void sort2(char palabras[][TAMTOKEN], int izq, int der) {
+		char pivote[TAMTOKEN];
+		strcpy_s(pivote, palabras[izq]);
+		int iConta = izq;
+		int jConta = der;
+		char aux[TAMTOKEN];
+
+		while (iConta < jConta) {
+			while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
+				iConta++;
+			while (strcmp(palabras[jConta], pivote) > 0)
+				jConta--;
+			if (iConta < jConta) {
+				strcpy_s(aux, palabras[iConta]);
+				strcpy_s(palabras[iConta], palabras[jConta]);
+				strcpy_s(palabras[jConta], aux);
+			}
+		}
+		strcpy_s(palabras[izq], palabras[jConta]);
+		strcpy_s(palabras[jConta], pivote);
+		if (izq < jConta - 1)
+			sort2(palabras, izq, jConta - 1);
+		if (jConta + 1 < der)
+			sort2(palabras, jConta + 1, der);
+	}

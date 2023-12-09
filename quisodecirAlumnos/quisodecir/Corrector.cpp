@@ -187,7 +187,7 @@ void sort2(char palabras[][TAMTOKEN], int izq, int der) {
 	char aux[TAMTOKEN];
 
 	while (iConta < jConta) {
-		while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
+		while (iConta < jConta && strcmp(palabras[iConta], pivote) <= 0)
 			iConta++;
 		while (strcmp(palabras[jConta], pivote) > 0)
 			jConta--;
@@ -214,7 +214,7 @@ void sort1(char palabras[][TAMTOKEN], int izq, int der, int iPeso[]) {
 	int iaux, ipivote = iPeso[izq];
 
 	while (iConta < jConta) {
-		while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
+		while (iConta < jConta && strcmp(palabras[iConta], pivote) <= 0)
 			iConta++;
 		while (strcmp(palabras[jConta], pivote) > 0)
 			jConta--;

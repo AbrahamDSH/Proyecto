@@ -147,4 +147,15 @@ void	ClonaPalabras(
 				}
 			}
 		}
+		for (int i = 0; i < iNumLista; i++) {
+			for (int j = 0; j < iNumLista - 1; j++) {
+				if (iPeso[j] < iPeso[j + 1]) {
+					int iaux; char caux[50];
+					strcpy_s(caux, szListaFinal[j + 1]); iaux = iPeso[j + 1];
+					strcpy_s(szListaFinal[j + 1], szListaFinal[j]); iPeso[j + 1] = iPeso[j];
+					strcpy_s(szListaFinal[j], caux); iPeso[j] = iaux;
+				}
+			}
+		}
+	}
 

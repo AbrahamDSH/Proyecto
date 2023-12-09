@@ -108,7 +108,26 @@ void	ClonaPalabras(
 		aux[i] = szPalabraLeida[i];
 	}
 	//suprime los caracteres
-
+	int contador = 0;
+	for (int i = 0; i < strlen(szPalabraLeida) && strlen(szPalabraLeida) != 1; i++) {
+		for (int j = 0; j < strlen(szPalabraLeida); j++) {
+			if (j != i)
+				aux[contador++] = szPalabraLeida[j];
+		} aux[contador] = '\0';
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], aux);
+		strcpy_s(aux, szPalabraLeida);
+		contador = 0;
+	}
+	//Transposición de caracteres
+	for (int i = 0; i < strlen(szPalabraLeida) - 1; i++) {
+		aux[i] = szPalabraLeida[i + 1];
+		aux[i + 1] = szPalabraLeida[i];
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], aux);
+		strcpy_s(aux, szPalabraLeida);
+	}
+	strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
+	sort2(szPalabrasSugeridas, 0, iNumSugeridas - 1);
+}
 
 /*****************************************************************************************************************
 	ListaCandidatas: Esta funcion recupera desde el diccionario las palabras validas y su peso
@@ -122,66 +141,99 @@ void	ClonaPalabras(
 	int		iPeso[],							//Peso de las palabras en la lista final
 	int &	iNumLista)							//Numero de elementos en la szListaFinal
 ******************************************************************************************************************/
-	void	ListaCandidatas(
-		char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras clonadas
-		int		iNumSugeridas,						//Lista de palabras clonadas
-		char	szPalabras[][TAMTOKEN],				//Lista de palabras del diccionario
-		int		iEstadisticas[],					//Lista de las frecuencias de las palabras
-		int		iNumElementos,						//Numero de elementos en el diccionario
-		char	szListaFinal[][TAMTOKEN],			//Lista final de palabras a sugerir
-		int		iPeso[],							//Peso de las palabras en la lista final
-		int& iNumLista)							//Numero de elementos en la szListaFinal
-	{
-		setAscii();
-		iNumLista = 0;
-		for (int i = 0; i < iNumSugeridas; i++) {
-			for (int j = 0; j < iNumElementos; j++) {
-				if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
-					bool flag = false;
-					for (int k = 0; k < iNumLista && !flag; k++)
-						if (strcmp(szListaFinal[k], szPalabras[j]) == 0)
-							flag = true;
-					if (flag) continue;
-					strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
-					iPeso[iNumLista++] = iEstadisticas[j];
-				}
-			}
-		}
-		for (int i = 0; i < iNumLista; i++) {
-			for (int j = 0; j < iNumLista - 1; j++) {
-				if (iPeso[j] < iPeso[j + 1]) {
-					int iaux; char caux[50];
-					strcpy_s(caux, szListaFinal[j + 1]); iaux = iPeso[j + 1];
-					strcpy_s(szListaFinal[j + 1], szListaFinal[j]); iPeso[j + 1] = iPeso[j];
-					strcpy_s(szListaFinal[j], caux); iPeso[j] = iaux;
-				}
+void	ListaCandidatas(
+	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras clonadas
+	int		iNumSugeridas,						//Lista de palabras clonadas
+	char	szPalabras[][TAMTOKEN],				//Lista de palabras del diccionario
+	int		iEstadisticas[],					//Lista de las frecuencias de las palabras
+	int		iNumElementos,						//Numero de elementos en el diccionario
+	char	szListaFinal[][TAMTOKEN],			//Lista final de palabras a sugerir
+	int		iPeso[],							//Peso de las palabras en la lista final
+	int& iNumLista)							//Numero de elementos en la szListaFinal
+{
+	setAscii();
+	iNumLista = 0;
+	for (int i = 0; i < iNumSugeridas; i++) {
+		for (int j = 0; j < iNumElementos; j++) {
+			if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
+				bool flag = false;
+				for (int k = 0; k < iNumLista && !flag; k++)
+					if (strcmp(szListaFinal[k], szPalabras[j]) == 0)
+						flag = true;
+				if (flag) continue;
+				strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
+				iPeso[iNumLista++] = iEstadisticas[j];
 			}
 		}
 	}
-
-
-	void sort2(char palabras[][TAMTOKEN], int izq, int der) {
-		char pivote[TAMTOKEN];
-		strcpy_s(pivote, palabras[izq]);
-		int iConta = izq;
-		int jConta = der;
-		char aux[TAMTOKEN];
-
-		while (iConta < jConta) {
-			while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
-				iConta++;
-			while (strcmp(palabras[jConta], pivote) > 0)
-				jConta--;
-			if (iConta < jConta) {
-				strcpy_s(aux, palabras[iConta]);
-				strcpy_s(palabras[iConta], palabras[jConta]);
-				strcpy_s(palabras[jConta], aux);
+	for (int i = 0; i < iNumLista; i++) {
+		for (int j = 0; j < iNumLista - 1; j++) {
+			if (iPeso[j] < iPeso[j + 1]) {
+				int iaux; char caux[50];
+				strcpy_s(caux, szListaFinal[j + 1]); iaux = iPeso[j + 1];
+				strcpy_s(szListaFinal[j + 1], szListaFinal[j]); iPeso[j + 1] = iPeso[j];
+				strcpy_s(szListaFinal[j], caux); iPeso[j] = iaux;
 			}
 		}
-		strcpy_s(palabras[izq], palabras[jConta]);
-		strcpy_s(palabras[jConta], pivote);
-		if (izq < jConta - 1)
-			sort2(palabras, izq, jConta - 1);
-		if (jConta + 1 < der)
-			sort2(palabras, jConta + 1, der);
 	}
+}
+
+
+void sort2(char palabras[][TAMTOKEN], int izq, int der) {
+	char pivote[TAMTOKEN];
+	strcpy_s(pivote, palabras[izq]);
+	int iConta = izq;
+	int jConta = der;
+	char aux[TAMTOKEN];
+
+	while (iConta < jConta) {
+		while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
+			iConta++;
+		while (strcmp(palabras[jConta], pivote) > 0)
+			jConta--;
+		if (iConta < jConta) {
+			strcpy_s(aux, palabras[iConta]);
+			strcpy_s(palabras[iConta], palabras[jConta]);
+			strcpy_s(palabras[jConta], aux);
+		}
+	}
+	strcpy_s(palabras[izq], palabras[jConta]);
+	strcpy_s(palabras[jConta], pivote);
+	if (izq < jConta - 1)
+		sort2(palabras, izq, jConta - 1);
+	if (jConta + 1 < der)
+		sort2(palabras, jConta + 1, der);
+}
+
+void sort1(char palabras[][TAMTOKEN], int izq, int der, int iPeso[]) {
+	char pivote[TAMTOKEN];
+	strcpy_s(pivote, palabras[izq]);
+	int iConta = izq;
+	int jConta = der;
+	char aux[TAMTOKEN];
+	int iaux, ipivote = iPeso[izq];
+
+	while (iConta < jConta) {
+		while (strcmp(palabras[iConta], pivote) <= 0 && iConta < jConta)
+			iConta++;
+		while (strcmp(palabras[jConta], pivote) > 0)
+			jConta--;
+		if (iConta < jConta) {
+			strcpy_s(aux, palabras[iConta]);
+			strcpy_s(palabras[iConta], palabras[jConta]);
+			strcpy_s(palabras[jConta], aux);
+			iaux = iPeso[iConta];
+			iPeso[iConta] = iPeso[jConta];
+			iPeso[jConta] = iaux;
+		}
+	}
+	strcpy_s(palabras[izq], palabras[jConta]);
+	strcpy_s(palabras[jConta], pivote);
+	iPeso[izq] = iPeso[jConta];
+	iPeso[jConta] = ipivote;
+
+	if (izq < jConta - 1)
+		sort1(palabras, izq, jConta - 1, iPeso);
+	if (jConta + 1 < der)
+		sort1(palabras, jConta + 1, der, iPeso);
+}
